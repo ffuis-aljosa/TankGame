@@ -8,7 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.stream.IntStream;
+import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
@@ -20,6 +21,15 @@ public class TankPanel extends JPanel implements ActionListener, KeyListener {
     private final int INTERVAL = 30;
 
     private Dimension panelSize = null;
+    
+    private ArrayList<Granade> granades = new ArrayList<>();
+    
+    private Rectangle2D.Double panelRect;
+    
+    private long frame;
+    
+    private long lastGranadeFrame;
+    private final int FIRE_RATE = 15;
 
     public TankPanel() {
         setBackground(Color.white);
@@ -29,6 +39,9 @@ public class TankPanel extends JPanel implements ActionListener, KeyListener {
         gameTimer = new Timer(INTERVAL, this);
         gameTimer.start();
 
+        frame = 0;
+        lastGranadeFrame = 0;
+        
         setFocusable(true);
         addKeyListener(this);
     }
@@ -37,6 +50,7 @@ public class TankPanel extends JPanel implements ActionListener, KeyListener {
     public void paint(Graphics g) {
         if (panelSize == null) {
             panelSize = getSize();
+            panelRect = new Rectangle2D.Double(0, 0, panelSize.width, panelSize.height);
         }
 
         super.paint(g);
@@ -44,14 +58,32 @@ public class TankPanel extends JPanel implements ActionListener, KeyListener {
         Graphics2D g2d = (Graphics2D) g;
 
         playerTank.paint(g2d);
+        
+        for (Granade granade : granades)
+            granade.paint(g2d);
     }
 
     private void move() {
         playerTank.move();
+        
+        for (Granade granade : granades)
+            granade.move();
     }
 
     private void handleCollisions() {
         handleTankHittingBorders();
+        cleanUpGranades();
+    }
+    
+    private void cleanUpGranades() {
+        int size = granades.size();
+        
+        for (int i = size - 1; i >= 0; i--) {
+            Granade granade = granades.get(i);
+            
+            if (!granade.getCollisionRect().intersects(panelRect))
+                granades.remove(i);
+        }
     }
     
     private void handleTankHittingBorders() {
@@ -63,6 +95,7 @@ public class TankPanel extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        frame++;
         move();
         handleCollisions();
         repaint();
@@ -113,6 +146,11 @@ public class TankPanel extends JPanel implements ActionListener, KeyListener {
                 break;
             default:
                 break;
+        }
+        
+        if (key == KeyEvent.VK_SPACE && frame - lastGranadeFrame > FIRE_RATE) {
+            lastGranadeFrame = frame;
+            granades.add(playerTank.fireGranade());
         }
     }
 
