@@ -1,19 +1,12 @@
 package tanks;
 
-import java.awt.Graphics2D;
 import java.awt.geom.Rectangle2D;
 
-public abstract class MovingObject {
+public abstract class MovingObject extends GameObject {
     
     public enum Direction {
         UP, DOWN, LEFT, RIGHT
     };
-    
-    protected int x;
-    protected int y;
-    
-    protected final int bigEdge;
-    protected final int smallEdge;
     
     protected final int speed;
     
@@ -22,30 +15,11 @@ public abstract class MovingObject {
 
     public MovingObject(int x, int y, int bigEdge, int smallEdge,
             Direction direction, boolean isMoving, int speed) {
-        this.x = x;
-        this.y = y;
-        this.bigEdge = bigEdge;
-        this.smallEdge = smallEdge;
+        super(x, y, bigEdge, smallEdge);
+        
         this.direction = direction;
         this.isMoving = isMoving;
         this.speed = speed;
-    }
-    
-    
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
     }
 
     public void setDirection(Direction direction) {
@@ -76,11 +50,12 @@ public abstract class MovingObject {
             }
         }
     }
-    
+
+    @Override
     public Rectangle2D.Double getCollisionRect() {
         int w, h;
         
-        if (direction == Direction.UP || direction == Direction.DOWN) {
+        if (direction == MovingObject.Direction.UP || direction == MovingObject.Direction.DOWN) {
             h = smallEdge;
             w = bigEdge;
         } else {
@@ -90,6 +65,4 @@ public abstract class MovingObject {
         
         return new Rectangle2D.Double(x, y, w, h);
     }
-    
-    abstract public void paint(Graphics2D g2d);
 }

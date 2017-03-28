@@ -1,12 +1,18 @@
 package tanks;
 
-import java.awt.Image;
-import javax.swing.ImageIcon;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 
 public class ImageProvider {
-    static Image sprites;
+    static BufferedImage sprites;
     
     public static void loadSprites() {
-        //sprites = ImageIcon(getResource("../images/sprites.png")).getImage();
+        try {
+            sprites = ImageIO.read(new File("./src/images/sprites.png"));
+        } catch (IOException ex) {
+            System.out.println(ex.getMessage());
+        }
     }
 }

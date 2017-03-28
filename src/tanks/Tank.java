@@ -40,7 +40,7 @@ public class Tank extends MovingObject {
 
     public Granade fireGranade() {
         int granadeX = 0, granadeY = 0;
-        
+
         switch (direction) {
             case UP:
                 granadeX = x + DIMENSION / 2 - Granade.SMALL_EDGE / 2;
@@ -65,8 +65,32 @@ public class Tank extends MovingObject {
 
     @Override
     public void paint(Graphics2D g2d) {
-        g2d.setPaint(mainColor);
-        g2d.drawRect(x, y, bigEdge, smallEdge);
+        int spriteDimension = 15;
+        
+        int dx1 = x, dx2 = x + DIMENSION, dy1 = y, dy2 = y + DIMENSION,
+                sx1 = 0, sx2 = 0, sy1 = 0, sy2 = spriteDimension;
+
+        switch (direction) {
+            case UP:
+                sx1 = 0;
+                sx2 = spriteDimension;
+                break;
+            case LEFT:
+                sx1 = spriteDimension * 2 + 2;
+                sx2 = spriteDimension * 3 + 2;
+                break;
+            case DOWN:
+                sx1 = spriteDimension * 4 + 3;
+                sx2 = spriteDimension * 5 + 3;
+                break;
+            case RIGHT:
+                sx1 = spriteDimension * 6 + 4;
+                sx2 = spriteDimension * 7 + 4;
+                break;
+        }
+
+        g2d.drawImage(ImageProvider.sprites, dx1, dy1, dx2, dy2,
+                sx1, sy1, sx2, sy2, null);
     }
 
 }

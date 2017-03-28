@@ -20,6 +20,8 @@ public class TankFrame extends JFrame {
         
         panel = new TankPanel();
         add(panel);
+        
+        ImageProvider.loadSprites();
     }
     
     

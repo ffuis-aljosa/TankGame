@@ -23,6 +23,7 @@ public class TankPanel extends JPanel implements ActionListener, KeyListener {
     private Dimension panelSize = null;
     
     private ArrayList<Granade> granades = new ArrayList<>();
+    private ArrayList<StationaryObject> obstacles = new ArrayList<>();
     
     private Rectangle2D.Double panelRect;
     
@@ -32,7 +33,7 @@ public class TankPanel extends JPanel implements ActionListener, KeyListener {
     private final int FIRE_RATE = 15;
 
     public TankPanel() {
-        setBackground(Color.white);
+        setBackground(Color.BLACK);
 
         playerTank = new Tank(300, 400);
 
@@ -41,6 +42,8 @@ public class TankPanel extends JPanel implements ActionListener, KeyListener {
 
         frame = 0;
         lastGranadeFrame = 0;
+        
+        obstacles.add(new Wall(0, 0, 60, 60));
         
         setFocusable(true);
         addKeyListener(this);
@@ -61,6 +64,9 @@ public class TankPanel extends JPanel implements ActionListener, KeyListener {
         
         for (Granade granade : granades)
             granade.paint(g2d);
+        
+        for (StationaryObject obstacles : obstacles)
+            obstacles.paint(g2d);
     }
 
     private void move() {
@@ -73,6 +79,17 @@ public class TankPanel extends JPanel implements ActionListener, KeyListener {
     private void handleCollisions() {
         handleTankHittingBorders();
         cleanUpGranades();
+        handleTankObstacleCollision();
+    }
+    
+    private void handleTankObstacleCollision() {
+        for (StationaryObject obstacle : obstacles) {
+            if (playerTank.getCollisionRect().intersects(obstacle.getCollisionRect())) {
+                if (obstacle instanceof Wall) {
+                    // stop moving
+                }
+            }
+        }
     }
     
     private void cleanUpGranades() {
@@ -95,6 +112,9 @@ public class TankPanel extends JPanel implements ActionListener, KeyListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if (panelSize == null)
+            return;
+        
         frame++;
         move();
         handleCollisions();
